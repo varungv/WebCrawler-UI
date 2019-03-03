@@ -54,9 +54,10 @@ class PageComponent extends Component {
                 var t1 = performance.now();
                 var response_time = ((t1-t0)/1000).toFixed(3);
                 this.toggleSpinner();
-                if(res.data.links){
-                    
-                    this.setState({...this.state, linkLinks: res.data.links.links, imageLinks:res.data.links.images, latestResponseTime: response_time});
+                if(res.data.links.links.length || res.data.links.images.length ){
+                    this.setState({...this.state, linkLinks: res.data.links.links, imageLinks: res.data.links.images, latestResponseTime: response_time});
+                }else{
+                    alert("No Links Found");
                 }
                 if(res.data.msg){
                     alert(res.data.msg);
@@ -68,28 +69,31 @@ class PageComponent extends Component {
         return (
             <div className='dark-bg'>
                 <SiteHeader></SiteHeader>
+                <div className='alert alert-warning top-margin-10 padding-5'>
+                    Note: We are skipping over any urls which are taking more than 3 seconds to maintan Performance
+                </div>
+                
                 <Form makeCrawlRequest={this.makeCrawlRequest}/>
                     
-                    {this.state.isLoading ? (
-                        <div className="spinner-div">
-                            <img src={spinner} alt='Loading...' className='App-logo App-logo-spin'/>
-                        </div>
-                    ) : (
-                        <div className='left-padding-20'>
-                            {this.state.linkLinks.length > 0 || this.state.imageLinks.length > 0 ? (
-                                <div>
-                                    <div className='text-align-right'>
-                                        <button className='btn btn-info margin-5' onClick={this.downloadCSV}>
-                                            <img src={downloadCSVIcon} alt='' className='small-icon'/>
-                                        </button>
-                                    </div>
-                                    <div class="alert alert-info padding-5">
-                                        <strong>
-                                        Scanned {this.state.linkLinks.length + this.state.imageLinks.length} links in {this.state.latestResponseTime} seconds!!
-                                        </strong>
-                                    </div>
+                {this.state.isLoading ? (
+                    <div className="spinner-div">
+                        <img src={spinner} alt='Loading...' className='App-logo App-logo-spin'/>
+                    </div>
+                ) : (
+                    <div className='left-padding-20'>
+                        {this.state.linkLinks.length > 0 || this.state.imageLinks.length > 0 ? (
+                            <div>
+                                <div className='text-align-right'>
+                                    <button className='btn btn-info margin-5' onClick={this.downloadCSV}>
+                                        <img src={downloadCSVIcon} alt='' className='small-icon'/>
+                                    </button>
                                 </div>
-                            ): ''}
+                                <div class="alert alert-info padding-5">
+                                    Scanned <strong>{this.state.linkLinks.length + this.state.imageLinks.length} links </strong> in <strong>{this.state.latestResponseTime} seconds!!</strong>
+                                    
+                                </div>
+                            </div>
+                        ): ''}
                             
                             {this.state.linkLinks.length > 0 && (
                                 <CollapsiblePanel header='Links' linkList={this.state.linkLinks} content='links' />)}
