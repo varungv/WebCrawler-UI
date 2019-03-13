@@ -54,7 +54,7 @@ class PageComponent extends Component {
                 var t1 = performance.now();
                 var response_time = ((t1-t0)/1000).toFixed(3);
                 this.toggleSpinner();
-                if(res.data.links.links.length || res.data.links.images.length ){
+                if(res.data.links && (res.data.links.links.length || res.data.links.images.length)){
                     this.setState({...this.state, linkLinks: res.data.links.links, imageLinks: res.data.links.images, latestResponseTime: response_time});
                 }else{
                     alert("No Links Found");
